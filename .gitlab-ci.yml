@@ -1,0 +1,56 @@
+image: node:18
+
+stages:
+  - build
+  - test
+  - deploy
+
+variables:
+  DEPLOY_ENVIRONMENT: "production"
+
+build_backend:
+  stage: build
+  script:
+    - cd backend
+    - npm install
+    - npm run build
+  artifacts:
+    paths:
+      - backend/dist
+
+build_frontend:
+  stage: build
+  script:
+    - cd frontend
+    - npm install
+    - npm run build
+  artifacts:
+    paths:
+      - frontend/build
+
+test_frontend:
+  stage: test
+  script:
+    - cd frontend
+    - npm install
+    - npm run test
+  allow_failure: false
+  only:
+    - main
+
+test_backend:
+  stage: test
+  script:
+    - cd backend
+    - npm install
+    - npm run test
+  allow_failure: true
+  only:
+    - main
+
+deploy:
+  stage: deploy
+  script:
+    - echo "Deploying application to ..."
+  only:
+    - main
